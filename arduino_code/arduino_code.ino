@@ -7,6 +7,15 @@ IRsend irsend;
 int MAX_SIGNAL_DELAY = 300;
 int KHZ = 38;
 
+
+unsigned int HDR_MARK = 3200;
+unsigned int HDR_SPACE = 1600;
+
+
+unsigned int BIT_MARK = 420;
+unsigned int SPACE_0 = 410;
+unsigned int SPACE_1 = 1200;
+
 unsigned long lastByteTime = 0;
 boolean signalFlushed = true;
 long countOfBufforBytes = 0;
@@ -44,7 +53,14 @@ void readBtData() {
 
 void flush() {
   static unsigned int irRawSignal[300];
-  prepareRawSignal(irRawSignal, buffor);
+  int irRawSignalSize = prepareRawSignal(irRawSignal, buffor, countOfBufforBytes);
+
+  Serial.println("raw data:");
+  for(int i=0; i<irRawSignalSize; i++) {
+    Serial.print(irRawSignal[i]);
+    Serial.print(", ");
+  }
+   Serial.print("end of raw data");
   
 //  unsigned int irSignal[] = {9000, 4500, 560, 560, 560, 560, 560, 1690, 560, 560, 560, 560, 560, 560, 560, 560, 560, 560, 560, 1690, 560, 1690, 560, 560, 560, 1690, 560, 1690, 560, 1690, 560, 1690, 560, 1690, 560, 560, 560, 560, 560, 560, 560, 1690, 560, 560, 560, 560, 560, 560, 560, 560, 560, 1690, 560, 1690, 560, 1690, 560, 560, 560, 1690, 560, 1690, 560, 1690, 560, 1690, 560, 39416, 9000, 2210, 560}; //AnalysIR Batch Export (IRremote) - RAW
 //  
@@ -52,7 +68,41 @@ void flush() {
   
 }
 
-void prepareRawSignal(unsigned int *irRawSignal, byte *data) {
+int prepareRawSignal(unsigned int *irRawSignal, byte *data, int dataSize) {
+  Serial.println("prepareRawSignal:");
+  int irRawSignalSize = 0;
+
+  //hdr signal
+  irRawSignal[0] = HDR_MARK;
+  irRawSignal[1] = HDR_SPACE;
+  irRawSignalSize = 2;
   
-  
+  for(int i = 0; i<dataSize ;i++) {
+    Serial.print("raw hex: ");
+    Serial.println(data[i], HEX);
+    irRawSignalSize += witeToRawArray(data[i], irRawSignal, irRawSignalSize);
+  }
+
+  return irRawSignalSize;
+}
+
+int witeToRawArray(byte byteToAdd, unsigned int *rawSignal, int startPositionToWrite) {
+
+  for(int bitIndex = 0; bitIndex<8 ;bitIndex++) {
+    int rawSignalIndex = startPositionToWrite + (bitIndex*2);
+
+    rawSignal[rawSignalIndex] = BIT_MARK;
+    
+    if(getBit(byteToAdd, bitIndex)) {
+      rawSignal[rawSignalIndex+1] = SPACE_1;
+    } else {
+      rawSignal[rawSignalIndex+1] = SPACE_0;
+    }
+  }
+  return 16;
+}
+
+
+boolean getBit(byte value, byte index) {
+  return (1<<index) & value;
 }
