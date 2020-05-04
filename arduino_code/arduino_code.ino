@@ -89,11 +89,13 @@ int prepareRawSignal(unsigned int *irRawSignal, byte *data, int dataSize) {
 int witeToRawArray(byte byteToAdd, unsigned int *rawSignal, int startPositionToWrite) {
 
   for(int bitIndex = 0; bitIndex<8 ;bitIndex++) {
+    int bitPositionFromLeft = 7-bitIndex;
+    
     int rawSignalIndex = startPositionToWrite + (bitIndex*2);
 
     rawSignal[rawSignalIndex] = BIT_MARK;
     
-    if(getBit(byteToAdd, bitIndex)) {
+    if(getBit(byteToAdd, bitPositionFromLeft)) {
       rawSignal[rawSignalIndex+1] = SPACE_1;
     } else {
       rawSignal[rawSignalIndex+1] = SPACE_0;
