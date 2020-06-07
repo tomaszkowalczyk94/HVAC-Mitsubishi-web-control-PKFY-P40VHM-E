@@ -1,12 +1,18 @@
-(ns test.core)
-(use 'serial.core)
+(ns test.core (:gen-class))
 
-(defn foo
-  "I don't do a whole lot."
-  [x]
-  (println x "Hello, World!"))
+(require '[clojure.tools.cli :refer [cli]])
 
-(def port (open "COM4"))
-(listen! port (fn [stream] (println stream)), false)
+(defn -main []  (println "Hello, World!"))
 
-(delay 9999999)
+
+
+;(use 'serial.core)
+;(defn foo
+;  "I don't do a whole lot."
+;  [x]
+;  (println x "Hello, World!"))
+;
+;(def port (open "COM5"))
+;(listen! port (fn [stream] (println stream)), false)
+;
+;(delay 9999999)

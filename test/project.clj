@@ -6,6 +6,9 @@
   :dependencies [
                  [org.clojure/clojure "1.10.0"]
                  [clj-serial "2.0.5"]
+                 [org.clojure/tools.cli "0.2.4"]
                  ]
+  :aot [test.core]
+  :main test.core
   :repl-options {:init-ns test.core})
 
