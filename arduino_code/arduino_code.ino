@@ -26,6 +26,7 @@ void setup(){
   Serial.begin(9600);
   //Initialize Bluetooth Serial Port
   hc06.begin(9600);
+  Serial.print("Hello world");
 }
 
 void loop(){
